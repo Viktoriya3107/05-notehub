@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import 'modern-normalize';
+import 'modern-normalize/modern-normalize.css';
 
 const queryClient = new QueryClient();
 
