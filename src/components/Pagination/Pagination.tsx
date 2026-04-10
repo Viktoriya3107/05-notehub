@@ -1,19 +1,31 @@
+import type { ComponentType } from 'react';
+import ReactPaginateModule from 'react-paginate';
+import type { ReactPaginateProps } from 'react-paginate';
+
+type ModuleWithDefault<T> = { default: T };
+
+const ReactPaginate = (
+  ReactPaginateModule as unknown as ModuleWithDefault<
+    ComponentType<ReactPaginateProps>
+  >
+).default;
+
 interface PaginationProps {
   pageCount: number;
-  onPageChange: (page: number) => void;
+  currentPage: number;
+  onPageChange: (selectedItem: { selected: number }) => void;
 }
 
 export default function Pagination({
   pageCount,
+  currentPage,
   onPageChange,
 }: PaginationProps) {
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
-      {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
-        <button key={page} onClick={() => onPageChange(page)}>
-          {page}
-        </button>
-      ))}
-    </div>
+    <ReactPaginate
+      pageCount={pageCount}
+      forcePage={currentPage - 1}
+      onPageChange={onPageChange}
+    />
   );
 }

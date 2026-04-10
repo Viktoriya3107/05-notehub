@@ -12,8 +12,15 @@ export default function Modal({ children, onClose }: ModalProps) {
       if (e.key === 'Escape') onClose();
     };
 
+    // 🚫 БЛОК СКРОЛУ
+    document.body.style.overflow = 'hidden';
+
     window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'auto'; // 🔁 повернення
+    };
   }, [onClose]);
 
   const handleBackdropClick = (

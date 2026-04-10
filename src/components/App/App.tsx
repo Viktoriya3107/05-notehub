@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fetchNotes } from '../../services/noteService';
 
 import NoteList from '../NoteList/NoteList';
@@ -11,11 +11,23 @@ import NoteForm from '../NoteForm/NoteForm';
 export default function App() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
+  // 🔥 debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // reset page
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['notes', page, search],
-    queryFn: () => fetchNotes(page, search),
+    queryKey: ['notes', page, debouncedSearch],
+    queryFn: () => fetchNotes(page, debouncedSearch),
+    placeholderData: keepPreviousData, // 🔥 важливо
   });
 
   if (isLoading) return <p>Loading...</p>;
@@ -29,7 +41,8 @@ export default function App() {
         {data.totalPages > 1 && (
           <Pagination
             pageCount={data.totalPages}
-            onPageChange={setPage}
+            currentPage={page}
+            onPageChange={({ selected }) => setPage(selected + 1)}
           />
         )}
 
